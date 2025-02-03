@@ -6,7 +6,7 @@ import redis.asyncio as redis
 redis_host = os.getenv('REDIS_CLOUD_ENDPOINT', 'redis')
 redis_port = os.getenv('REDIS_CLOUD_PORT', 6379)
 redis_username = os.getenv('REDIS_USERNAME', "default")
-redis_password = os.getenv('REDIS_PASSWORD', "default")
+redis_password = os.getenv('REDIS_PASSWORD', "my_password")
 
 redis_client = redis.Redis(
     host=redis_host,

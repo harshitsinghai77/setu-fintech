@@ -12,6 +12,7 @@ from fastapi.responses import HTMLResponse
 
 from app.api.routers.pancard import pancard_router
 from app.api.routers.back_account import bank_account_router
+from app.redis_client import check_redis_connection
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -22,9 +23,9 @@ async def lifespan_context(app: FastAPI) -> AsyncGenerator[None, None]:
     print("Starting app...")
 
     # Check Redis connection
-    # if not await check_redis_connection():
-    #     print("Failed to connect to Redis. Shutting down...")
-    #     raise RuntimeError("Failed to connect to Redis")
+    if not await check_redis_connection():
+        print("Failed to connect to Redis. Shutting down...")
+        raise RuntimeError("Failed to connect to Redis")
 
     yield
 
