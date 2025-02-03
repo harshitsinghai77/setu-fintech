@@ -57,7 +57,7 @@ app.add_middleware(
 @app.get("/")
 def index():
     """Generic message if backend is deployed succesfully."""
-    return HTMLResponse(content="<h1> Welcome to Nemo.🥳</h1> ", status_code=200)
+    return HTMLResponse(content="<h1> Hi there. 🥳</h1> ", status_code=200)
 
 @app.get("/health")
 async def health():
