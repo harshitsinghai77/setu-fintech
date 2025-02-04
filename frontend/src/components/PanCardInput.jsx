@@ -81,6 +81,7 @@ const PanCardInput = ({ setPancardData, incrStep }) => {
   return (
     <div className="flex flex-col space-y-2.5">
       <Label htmlFor="panCardNumber">Enter Pan Card Details</Label>
+      <p className="text-xs text-gray-400">Valid Pan Card ABCDE1234A</p>
       <Input
         placeholder="Enter Card Number"
         value={panCardNumber}

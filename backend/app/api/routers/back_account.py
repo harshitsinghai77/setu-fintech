@@ -1,4 +1,5 @@
 import os
+import logging
 from datetime import datetime
 import json
 
@@ -12,6 +13,7 @@ from app.redis_client import push_log_entry_to_redis, add_key_value_redis, get_v
 from app.utils.models import MockPaymentRequest
 from app.utils.constants import REDIS_RPD_ANALYTICS_KEY, REDIS_RPD_STATUS_KEY, REDIS_LOG_ANALYTICS_KEY
 
+logger = logging.getLogger(__name__)
 bank_account_router = APIRouter()
 
 SETU_KYC_PRODUCT_ID = os.getenv('SETU_RPD_PRODUCT_ID')
@@ -45,7 +47,6 @@ async def create_reverse_penny_drop(bank_details: Dict[str, str]):
 
     async with httpx.AsyncClient() as client:
         response = await client.post(url, json=request_payload, headers=headers)
-        print(response.text)
         response_data = response.json()
     return response_data
 
@@ -139,11 +140,11 @@ async def setu_webhook(request: Request):
             push_log_entry_to_redis(REDIS_RPD_ANALYTICS_KEY, analytics_value)
         )
 
-        print(f"Stored RPD {_id} data successfully in Redis")
+        logger.info(f"Stored RPD {_id} data successfully in Redis")
 
         return {"message": "Webhook received"} 
     except Exception as e:
-        print("Error processing webhook:", str(e))
+        logger.error("Error processing webhook:", str(e))
         raise HTTPException(status_code=400, detail="Invalid webhook payload")
 
 @bank_account_router.get("/rpd-payment-status/setu/{request_id}")

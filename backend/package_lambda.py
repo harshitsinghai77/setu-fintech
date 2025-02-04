@@ -2,6 +2,11 @@ import shutil
 import subprocess
 from pathlib import Path
 
+
+# Define a function to ignore __pycache__ directories
+def ignore_pycache(dir, files):
+    return [f for f in files if f == '__pycache__']
+
 def package_lambda():
     """Package the FastAPI app and its dependencies into a ZIP file for deployment to AWS Lambda."""
     current_dir = Path(__file__).parent.resolve()
@@ -23,7 +28,7 @@ def package_lambda():
     package_dir.mkdir()
 
     shutil.copy(main_file, package_dir)
-    shutil.copytree(app_dir, package_dir / "app", dirs_exist_ok=True)
+    shutil.copytree(app_dir, package_dir / "app", dirs_exist_ok=True, ignore=ignore_pycache)
     
     subprocess.run(
         [

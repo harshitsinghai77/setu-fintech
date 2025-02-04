@@ -4,6 +4,7 @@ import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 
+from mangum import Mangum
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
@@ -20,25 +21,23 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan_context(app: FastAPI) -> AsyncGenerator[None, None]:
     # Startup logic
-    print("Starting app...")
+    logger.info("Starting app...")
 
     # Check Redis connection
-    if not await check_redis_connection():
-        print("Failed to connect to Redis. Shutting down...")
-        raise RuntimeError("Failed to connect to Redis")
+    # if not await check_redis_connection():
+    #     logger.error("Failed to connect to Redis. Shutting down...")
+    #     raise RuntimeError("Failed to connect to Redis")
 
     yield
 
-    # Perform shutdown tasks (e.g., closing DB connections)
     # Shutdown logic
-    print("Shutting down...")
+    logger.info("Shutting down...")
 
 app = FastAPI(lifespan=lifespan_context)
 
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
     start_time = time.perf_counter()
-
     response = await call_next(request)
     duration = time.perf_counter() - start_time
 
@@ -75,3 +74,6 @@ app.include_router(
     prefix="/bankaccount",
     tags=["BANK_ACCOUNT_VERIFICATION"],
 )
+
+# Add Mangum handler for AWS Lambda
+handler = Mangum(app)
