@@ -18,27 +18,9 @@ const Navbar = () => {
             <span className="sr-only">Acme Inc</span>
           </Link>
           <div className="grid gap-2 py-6">
-            <Link
-              to="/"
-              className="flex w-full items-center py-2 text-lg font-semibold"
-              prefetch={false}
-            >
-              KYC
-            </Link>
-            <Link
-              to="/mock-payment"
-              className="flex w-full items-center py-2 text-lg font-semibold"
-              prefetch={false}
-            >
-              Mock Payment
-            </Link>
-            <Link
-              to="/analytics"
-              className="flex w-full items-center py-2 text-lg font-semibold"
-              prefetch={false}
-            >
-              Analytics
-            </Link>
+            <Link to="/" className="flex w-full items-center py-2 text-lg font-semibold" prefetch={false} > KYC </Link>
+            <Link to="/mock-payment" className="flex w-full items-center py-2 text-lg font-semibold" prefetch={false} > Mock Payment </Link>
+            <Link to="/analytics" className="flex w-full items-center py-2 text-lg font-semibold" prefetch={false} > Analytics </Link>
           </div>
         </SheetContent>
       </Sheet>

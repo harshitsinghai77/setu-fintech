@@ -8,16 +8,18 @@ import { Separator } from "@/components/ui/separator";
 
 const BankAccountDetails = ({ data }) => {
   return (
-    <Card className="max-w-lg mx-auto p-8">
+    <Card className="max-w-lg mx-auto sm:p-8">
       <CardHeader>
-        <p variant="h4">Bank Account Details</p>
+        <p variant="body1" className="font-semibold text-zinc-500">
+          Bank Account Details
+        </p>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center">
             <p
               variant="body1"
-              className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+              className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
             >
               Account Type:
             </p>
@@ -29,7 +31,7 @@ const BankAccountDetails = ({ data }) => {
           <div className="flex items-center">
             <p
               variant="body1"
-              className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+              className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
             >
               Bank Account Type:
             </p>
@@ -41,7 +43,7 @@ const BankAccountDetails = ({ data }) => {
           <div className="flex items-center">
             <p
               variant="body1"
-              className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+              className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
             >
               Bank IFSC:
             </p>
@@ -53,7 +55,7 @@ const BankAccountDetails = ({ data }) => {
           <div className="flex items-center">
             <p
               variant="body1"
-              className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+              className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
             >
               Account Name:
             </p>
@@ -65,7 +67,7 @@ const BankAccountDetails = ({ data }) => {
           <div className="flex items-center">
             <p
               variant="body1"
-              className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+              className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
             >
               Bank Account Number:
             </p>
@@ -90,18 +92,18 @@ const BankAccountDetails = ({ data }) => {
 
           <Separator />
 
-          <div className="space-y-2">
+          <div className="space-y-4 sm:space-y-2">
             <p variant="body1" className="font-semibold text-zinc-500">
               IFSC Details
             </p>
             <div className="flex items-center">
               <p
                 variant="body1"
-                className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+                className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
               >
                 Address:
               </p>
-              <p variant="body1" className="font-semibold leading-none">
+              <p variant="body1" className="text-right sm:text-center font-semibold leading-none">
                 {data.ifscDetails.address}
               </p>
             </div>
@@ -109,11 +111,11 @@ const BankAccountDetails = ({ data }) => {
             <div className="flex items-center">
               <p
                 variant="body1"
-                className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+                className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
               >
                 Branch:
               </p>
-              <p variant="body1" className="font-semibold leading-none">
+              <p variant="body1" className="text-right font-semibold leading-none">
                 {data.ifscDetails.branch}
               </p>
             </div>
@@ -121,11 +123,11 @@ const BankAccountDetails = ({ data }) => {
             <div className="flex items-center">
               <p
                 variant="body1"
-                className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+                className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
               >
                 District:
               </p>
-              <p variant="body1" className="font-semibold leading-none">
+              <p variant="body1" className="text-right font-semibold leading-none">
                 {data.ifscDetails.district}
               </p>
             </div>
@@ -133,11 +135,11 @@ const BankAccountDetails = ({ data }) => {
             <div className="flex items-center">
               <p
                 variant="body1"
-                className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+                className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
               >
                 City:
               </p>
-              <p variant="body1" className="font-semibold leading-none">
+              <p variant="body1" className="text-right font-semibold leading-none">
                 {data.ifscDetails.city}
               </p>
             </div>
@@ -145,11 +147,11 @@ const BankAccountDetails = ({ data }) => {
             <div className="flex items-center">
               <p
                 variant="body1"
-                className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+                className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
               >
                 State:
               </p>
-              <p variant="body1" className="font-semibold leading-none">
+              <p variant="body1" className="text-right font-semibold leading-none">
                 {data.ifscDetails.state}
               </p>
             </div>
@@ -157,11 +159,11 @@ const BankAccountDetails = ({ data }) => {
             <div className="flex items-center">
               <p
                 variant="body1"
-                className="text-sm text-zinc-500 dark:text-zinc-400 w-48"
+                className="text-left text-sm text-zinc-500 dark:text-zinc-400 w-48"
               >
                 Bank Name:
               </p>
-              <p variant="body1" className="font-semibold leading-none">
+              <p variant="body1" className="text-right font-semibold leading-none">
                 {data.ifscDetails.name}
               </p>
             </div>

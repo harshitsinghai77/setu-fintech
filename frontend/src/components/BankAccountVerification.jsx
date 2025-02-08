@@ -152,7 +152,7 @@ const BankAccountVerification = ({ incrStep, setBankAccount }) => {
   }, []);
 
   return (
-    <Card className="max-w-lg mx-auto p-8">
+    <Card className="max-w-lg mx-auto sm:p-8">
       <CardHeader>
         <CardTitle>Bank Information Verification</CardTitle>
         <CardDescription>
@@ -162,7 +162,7 @@ const BankAccountVerification = ({ incrStep, setBankAccount }) => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          <ul className="list-disc pl-5 space-y-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <ul className="text-left list-disc pl-5 space-y-2 text-sm text-zinc-500 dark:text-zinc-400">
             <li>
               Make a ₹1 payment to a unique UPI ID associated with your account.
             </li>
@@ -172,7 +172,7 @@ const BankAccountVerification = ({ incrStep, setBankAccount }) => {
             </li>
             <li>The ₹1 payment will be refunded within 48 hours.</li>
           </ul>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-4">
+          <p className="text-left text-sm text-zinc-500 dark:text-zinc-400 mt-4">
             Please click the button below to initiate the payment process. A new
             tab will open where you can complete the payment.
           </p>
@@ -206,7 +206,7 @@ const BankAccountVerification = ({ incrStep, setBankAccount }) => {
         </Button>
       )}
       {isPaymentLoading && (
-        <div className="mt-4 text-center">
+        <div className="m-4 sm:m-0 sm:mt-4 text-center">
           <p>Waiting for payment confirmation...</p>
           <p>
             We'll check for payment confirmation for up to {timeLeft} seconds.

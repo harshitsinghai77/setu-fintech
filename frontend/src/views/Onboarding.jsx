@@ -47,11 +47,11 @@ export default function Onboarding() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+    <div className="flex flex-col items-center justify-center mb-4">
+      <h2 className="scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0 sm:text-3xl">
         KYC (Know Your Customer)
       </h2>
-      <Card className="w-[550px]">
+      <Card className="w-[340px] sm:w-[550px]">
         <CardHeader>
           <h2 className="text-lg font-semibold">Step {step} of 4</h2>
           <Progress value={(step / 4) * 100} className="mt-2" />
