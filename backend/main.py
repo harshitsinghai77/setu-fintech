@@ -8,7 +8,6 @@ from mangum import Mangum
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 from fastapi.responses import HTMLResponse
 
 from app.api.routers.pancard import pancard_router
@@ -44,13 +43,12 @@ async def log_requests(request: Request, call_next):
     logger.info(f"{request.method} {request.url} - {response.status_code} - {duration:.6f}s")    
     return response
 
-# app.add_middleware(HTTPSRedirectMiddleware)  # Force HTTPS for security
-# app.add_middleware(TrustedHostMiddleware)
+app.add_middleware(HTTPSRedirectMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=["https://setu-demo-harshit.netlify.app"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 

@@ -4,8 +4,9 @@ from dotenv import load_dotenv
 from aws_cdk import (
     Stack,
     aws_lambda as _lambda,
-    aws_apigatewayv2 as _apigw,
-    aws_apigatewayv2_integrations,
+    aws_apigateway as _apigw,
+    # aws_apigatewayv2 as _apigw,
+    # aws_apigatewayv2_integrations,
     Duration
 )
 
@@ -37,18 +38,40 @@ class InfrastructureStack(Stack):
             timeout=Duration.seconds(30)
         )
 
-        # Create an API Gateway
-        base_api = _apigw.HttpApi(self, "SetuAppAPIGateway",
-            api_name='setu-app-api',
-            cors_preflight=_apigw.CorsPreflightOptions(
-                allow_origins=["*"],
-                allow_methods=[_apigw.CorsHttpMethod.GET, _apigw.CorsHttpMethod.POST],
-                allow_headers=["*"]
-        ))
+        # # Create an API Gateway
+        # base_api = _apigw.HttpApi(self, "SetuAppAPIGateway",
+        #     api_name='setu-app-api',
+        #     cors_preflight=_apigw.CorsPreflightOptions(
+        #         allow_origins=["*"],
+        #         allow_methods=[_apigw.CorsHttpMethod.GET, _apigw.CorsHttpMethod.POST],
+        #         allow_headers=["*"]
+        # ))
 
-        # Add API Gateway routes
-        base_api.add_routes(
-            path="/{proxy+}",
-            methods=[_apigw.HttpMethod.GET, _apigw.HttpMethod.POST],
-            integration=aws_apigatewayv2_integrations.HttpLambdaIntegration("SetuAPILambdaIntegration", handler=base_lambda)
+        # # Add API Gateway routes
+        # base_api.add_routes(
+        #     path="/{proxy+}",
+        #     methods=[_apigw.HttpMethod.GET, _apigw.HttpMethod.POST],
+        #     integration=aws_apigatewayv2_integrations.HttpLambdaIntegration("SetuAPILambdaIntegration", handler=base_lambda),
+        # )
+
+        api = _apigw.RestApi(self, "SetuAppRestApi",
+            rest_api_name="SetuAppRestApi",
+            description="API Gateway for Setu App",
+            deploy=True,
+            deploy_options=_apigw.StageOptions(
+                stage_name="prod",
+                throttling_rate_limit=10, 
+                throttling_burst_limit=5,
+                metrics_enabled=True,
+                logging_level=_apigw.MethodLoggingLevel.INFO,
+                data_trace_enabled=True
+            ),
+            default_cors_preflight_options={
+                "allow_origins": ["https://setu-demo-harshit.netlify.app"],
+                "allow_methods": ["GET", "POST"],
+                "allow_headers": ["*"]
+            }
         )
+
+        resource = api.root.add_resource("{proxy+}")
+        resource.add_method("ANY", _apigw.LambdaIntegration(base_lambda), api_key_required=False)
