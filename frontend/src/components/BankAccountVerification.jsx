@@ -38,10 +38,7 @@ const BankAccountVerification = ({ incrStep, setBankAccount }) => {
     try {
       const resp = await apiService.createReversePennyDrop();
 
-      if (
-        resp &&
-        resp.status.toUpperCase() === "BAV_REVERSE_PENNY_DROP_CREATED"
-      ) {
+      if (resp && resp.status.toUpperCase() === "BAV_REVERSE_PENNY_DROP_CREATED") {
         setRequestId(resp.id);
         window.open(resp.shortUrl, "_blank");
         startCountdown();
