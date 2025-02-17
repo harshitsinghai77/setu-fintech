@@ -22,20 +22,27 @@ env = {
     'REDIS_CLOUD_PORT': os.getenv('REDIS_CLOUD_PORT'),
     'REDIS_USERNAME': os.getenv('REDIS_USERNAME'),
     'REDIS_PASSWORD': os.getenv('REDIS_PASSWORD'),
+    "AWS_LAMBDA_EXEC_WRAPPER": "/opt/bootstrap",
+    "AWS_LWA_INVOKE_MODE": "response_stream",
+    "PORT": "8000",
 }
 
 class InfrastructureStack(Stack):
     def __init__(self, scope, id, **kwargs):
         super().__init__(scope, id, **kwargs)
 
+        # Lambda layer ARN (for aws-lambda-web-adapter)
+        lambda_layer_arn = "arn:aws:lambda:ap-south-1:753240598075:layer:LambdaAdapterLayerX86:24"
+
         # Define the Lambda function
         base_lambda = _lambda.Function(self, "FastAPILambda",
             runtime=_lambda.Runtime.PYTHON_3_13,
-            handler="main.handler",  # Update this to your Lambda handler
+            handler="main.handler",
             code=_lambda.Code.from_asset("lambda_function.zip"),
             environment=env,
             memory_size=256,
-            timeout=Duration.seconds(30)
+            timeout=Duration.seconds(90),
+            layers=[_lambda.LayerVersion.from_layer_version_arn(self, "LambdaLayerForLambdaWebAdapter", lambda_layer_arn)],
         )
 
         # # Create an API Gateway

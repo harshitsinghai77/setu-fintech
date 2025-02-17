@@ -13,6 +13,7 @@ def package_lambda():
     app_dir = current_dir / "app"
     main_file = current_dir / "main.py"
     requirements_file = current_dir / "requirements.txt"
+    run_sh_file = current_dir / "run.sh"
     package_dir = current_dir / "lambda_package"
     output_zip = current_dir / "lambda_function.zip"
     
@@ -28,6 +29,7 @@ def package_lambda():
     package_dir.mkdir()
 
     shutil.copy(main_file, package_dir)
+    shutil.copy(run_sh_file, package_dir)
     shutil.copytree(app_dir, package_dir / "app", dirs_exist_ok=True, ignore=ignore_pycache)
     
     subprocess.run(

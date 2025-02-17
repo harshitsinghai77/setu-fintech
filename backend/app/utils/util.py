@@ -1,9 +1,16 @@
+import json
 from datetime import datetime
 from collections import defaultdict
-from typing import Dict, List
+import logging
 
-from app.redis_client import push_log_entry_to_redis
+from typing import Dict, List
+import asyncio
+
+from app.redis_client import push_log_entry_to_redis, get_value_redis
 from app.utils.constants import REDIS_LOG_ANALYTICS_KEY
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 async def log_pancard_analytics(log_entry: Dict[str, str]):
     """Logs detailed analytics in Redis."""
@@ -93,3 +100,25 @@ def generate_pancard_analytics_report(pancard_data: List[Dict[str, str]]):
         'totalFailedAttempts': failed_pancard,
         'totalSuccessAttempts': success_pancard
     }
+
+async def poll_redis_for_event(redis_key: str, timeout: int=60, poll_interval:int=1):
+    """Poll Redis for the given redis_key and check if it has data. Stops polling after `timeout` seconds."""
+    start_time = asyncio.get_event_loop().time()
+    
+    while True:
+        if asyncio.get_event_loop().time() - start_time > timeout:
+            return None
+        
+        try:
+            event_data = await get_value_redis(redis_key)
+            
+            if event_data:
+                event_data = {'status': 'true', **json.loads(event_data)}
+                logger.info(f"Data found for key: {redis_key}")
+                return event_data 
+            
+        except Exception as e:
+            logger.error(f"Error fetching data from Redis: {e}")
+
+        # Sleep for the poll_interval before checking again
+        await asyncio.sleep(poll_interval)

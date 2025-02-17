@@ -3,12 +3,13 @@ import logging
 from datetime import datetime
 import json
 
-import asyncio
-from fastapi import APIRouter, Request, HTTPException
 from typing import Dict
 import httpx
+import asyncio
+from fastapi import APIRouter, Request, HTTPException
+from sse_starlette.sse import EventSourceResponse
 
-from app.utils.util import generate_rpd_analytics_report, generate_pancard_analytics_report
+from app.utils.util import generate_rpd_analytics_report, generate_pancard_analytics_report, poll_redis_for_event
 from app.redis_client import push_log_entry_to_redis, add_key_value_redis, get_value_redis, get_list_from_redis
 from app.utils.models import MockPaymentRequest
 from app.utils.constants import REDIS_RPD_ANALYTICS_KEY, REDIS_RPD_STATUS_KEY, REDIS_LOG_ANALYTICS_KEY
@@ -22,6 +23,8 @@ SETU_KYC_CLIENT_SECRET = os.getenv('SETU_CLIENT_SECRET')
 SETU_BASE_URL = 'https://dg-sandbox.setu.co'
 REDIRECT_URL = 'http://localhost:5173/'
 TIMEOUT_SECONDS = 60
+
+ongoing_requests: Dict[str, asyncio.Event] = {}
 
 @bank_account_router.post("/create-rpd")
 async def create_reverse_penny_drop(bank_details: Dict[str, str]):
@@ -142,6 +145,10 @@ async def setu_webhook(request: Request):
 
         logger.info(f"Stored RPD {_id} data successfully in Redis")
 
+        # After storing the data to redis, set the Event so that the waiting event can continue
+        # if _id in ongoing_requests:
+        #     ongoing_requests[_id].set()  # This will resume the waiting client task
+
         return {"message": "Webhook received"} 
     except Exception as e:
         logger.error("Error processing webhook:", str(e))
@@ -176,6 +183,60 @@ async def fetch_status_from_cache(request_id: str):
     if cached_value:
         return json.loads(cached_value)
     return {}
+
+@bank_account_router.get("/rpd-payment-status/sse/{request_id}")
+async def fetch_status_from_cache_using_see(request_id: str):
+    """Fetches the status of RPD request using SSE. Waits for the event to be set and then checks the cache."""
+
+    if request_id not in ongoing_requests:
+        event = asyncio.Event()
+        ongoing_requests[request_id] = event
+        logger.info(f"Added new event with {request_id} to event")
+
+    async def generate_sse(request_id: str):
+        event = ongoing_requests.get(request_id)
+
+        if not event:
+            yield f'{{"status": false, "message": "No event found for {request_id}"}}\n\n'
+            return
+
+        try:
+            await event.wait() 
+            redis_key = f"rpd_status:{request_id}"
+            cached_value = await get_value_redis(redis_key)
+            
+            if cached_value:
+                yield f"{json.loads(cached_value)}\n\n"
+            else:
+                yield f"{{'status': 'false', 'message': 'No data found'}}\n\n"
+        except asyncio.CancelledError:
+            logger.warning(f"SSE stream for {request_id} was cancelled.")
+            yield f"{{'status': 'false', 'message': 'Stream was cancelled'}}\n\n"
+        finally:
+            ongoing_requests.pop(request_id, None)
+    
+    return EventSourceResponse(generate_sse(request_id), media_type="text/event-stream")
+
+@bank_account_router.get("/rpd-payment-status/sse-poll/{request_id}")
+async def fetch_status_from_cache_using_polling(request_id: str):
+    """Fetches the status of RPD request using SSE and Redis polling."""
+    
+    async def generate_sse(request_id: str):
+        redis_key = f"rpd_status:{request_id}"
+        
+        try:
+            # Poll Redis for up to 60 seconds to check if event data exists
+            event_data = await poll_redis_for_event(redis_key, timeout=60, poll_interval=2)
+
+            if event_data:
+                yield f"data: {json.dumps(event_data)}\n\n"
+            else:
+                yield f"data: {json.dumps({'status': 'false', 'message': f'No data found for request_id {request_id}'})}\n\n"
+        except Exception as e:
+            logger.error("Error processing sse-poll:", str(e))
+            yield f"data: {json.dumps({'status': 'false', 'message': str(e)})}\n\n"
+
+    return EventSourceResponse(generate_sse(request_id), media_type="text/event-stream")
 
 @bank_account_router.get('/analytics')
 async def get_analytics():
